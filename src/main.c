@@ -6,38 +6,45 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#define likely(x)   __builtin_expect((x), 1)
+#define unlikely(x) __builtin_expect((x), 0)
+
 // macro for chess_board index
-#define empty 0
-#define white 1
-#define black 2
-#define P 3
-#define N 4
-#define B 5
-#define R 6
-#define Q 7
-#define K 8
-#define p 9
-#define n 10
-#define b 11
-#define r 12
-#define q 13
-#define k 14
-#define metadataC 15
+#define IDX_empty 0
+#define IDX_white 1
+#define IDX_black 2
+#define IDX_P 3
+#define IDX_N 4
+#define IDX_B 5
+#define IDX_R 6
+#define IDX_Q 7
+#define IDX_K 8
+#define IDX_p 9
+#define IDX_n 10
+#define IDX_b 11
+#define IDX_r 12
+#define IDX_q 13
+#define IDX_k 14
+#define IDX_metadataB 15
 
-// macro for metadataC
-#define W_K_CASTLE 0x0100ULL
-#define W_Q_CASTLE 0x0200ULL
-#define B_K_CASTLE 0x0400ULL
-#define B_Q_CASTLE 0x0800ULL
-#define WHITE_TURN 0x1000ULL
+// macro for metadataB
+#define FLAG_WK_CASTLE 0x0100000000ULL
+#define FLAG_WQ_CASTLE 0x0200000000ULL
+#define FLAG_BK_CASTLE 0x0400000000ULL
+#define FLAG_BQ_CASTLE 0x0800000000ULL
+#define FLAG_W_TURN 0x1000000000ULL
 
-// macro for metadataM 
-#define PROMOTED_Q 0x0100ULL
-#define PROMOTED_R 0x0200ULL
-#define PROMOTED_B 0x0400ULL
-#define PROMOTED_N 0x0800ULL
-#define EN_PASSANT 0x1000ULL
-#define W_K_CASTLE 0x2000ULL
+// macro for metadataM
+#define MASK_FROM   0x000F0000ULL
+#define MASK_TO     0x00F00000ULL
+#define MASK_TAKE   0x0F000000ULL
+
+#define SHIFT_FROM  16
+#define SHIFT_TO    20
+#define SHIFT_TAKE  24
+
+// macro for both metadataB and metadataM
+#define MASK_EN_PASSANT 0x3ULL
 
 typedef struct chess_board {
     uint64_t board[16];
@@ -51,12 +58,29 @@ typedef struct move {
 } move;
 
 void doMove(chess_board *board, move *move) {
-    board->board[move->metadataM & 0x00F0000] ^= move->from;
-    board->board[move->metadataM & 0xF000000] ^= move->to;
-    board->board[move->metadataM & 0x0F00000] |= move->to;
+    board->board[IDX_metadataB] = (board->board[IDX_metadataB] & ~MASK_EN_PASSANT) | (move->metadataM & MASK_EN_PASSANT);   
+    board->board[IDX_metadataB] ^= FLAG_W_TURN;
+
+    board->board[(move->metadataM & MASK_FROM) >> SHIFT_FROM] &= ~(move->from);
+    board->board[IDX_empty] |= move->from;
+    board->board[(move->metadataM & MASK_TAKE) >> SHIFT_TAKE] &= ~(move->to);
+    board->board[(move->metadataM & MASK_TO) >> SHIFT_TO] |= move->to;
+
+    if(unlikely(move->metadataM & FLAG_WK_CASTLE)) {
+
+    } else if(unlikely(move->metadataM & FLAG_WQ_CASTLE)) {
+        
+    } else if(unlikely(move->metadataM & FLAG_BK_CASTLE)) {
+        
+    } else if(unlikely(move->metadataM & FLAG_BQ_CASTLE)) {
+        
+    } else {
+        
+    }
 }
 
 void generateMove(chess_board *board, move *moveList, int *moveNum) {
+    /*
     int num = 0;
     int piece = n;
     if(board->board[metadataC] & WHITE_TURN) {
@@ -66,25 +90,32 @@ void generateMove(chess_board *board, move *moveList, int *moveNum) {
         
     }
     *moveNum = num;
+    */
 }
 
 void initializeBoard(chess_board *board) {
-    board->board[empty] = 0x0000FFFFFFFF0000ULL;
-    board->board[white] = 0x000000000000FFFFULL;
-    board->board[black] = 0xFFFF000000000000ULL;
-    board->board[P] = 0x000000000000FF00ULL;
-    board->board[N] = 0x0000000000000042ULL;
-    board->board[B] = 0x0000000000000024ULL;
-    board->board[R] = 0x0000000000000081ULL;
-    board->board[Q] = 0x0000000000000010ULL;
-    board->board[K] = 0x0000000000000008ULL;
-    board->board[p] = board->board[P] << 40;
-    board->board[n] = board->board[N] << 56;
-    board->board[b] = board->board[B] << 56;
-    board->board[r] = board->board[R] << 56;
-    board->board[q] = board->board[Q] << 56;
-    board->board[k] = board->board[K] << 56;
-    board->board[metadataC] = 0x0000000000001F00ULL;
+    /**
+     * void initializeBoard(chess_board *board)
+     *     -- Follows standard mapping
+     *     - MSB (a1)
+     *     - LSB (h8)
+     */
+    board->board[IDX_empty] = 0x0000FFFFFFFF0000ULL;
+    board->board[IDX_white] = 0xFFFF000000000000ULL;
+    board->board[IDX_black] = 0x000000000000FFFFULL;
+    board->board[IDX_P] = 0x00FF000000000000ULL;
+    board->board[IDX_N] = 0x4200000000000000ULL;
+    board->board[IDX_B] = 0x2400000000000000ULL;
+    board->board[IDX_R] = 0x8100000000000000ULL;
+    board->board[IDX_Q] = 0x1000000000000000ULL;
+    board->board[IDX_K] = 0x0800000000000000ULL;
+    board->board[IDX_p] = board->board[IDX_P] >> 40;
+    board->board[IDX_n] = board->board[IDX_N] >> 56;
+    board->board[IDX_b] = board->board[IDX_B] >> 56;
+    board->board[IDX_r] = board->board[IDX_R] >> 56;
+    board->board[IDX_q] = board->board[IDX_Q] >> 56;
+    board->board[IDX_k] = board->board[IDX_K] >> 56;
+    board->board[IDX_metadataB] = FLAG_WK_CASTLE | FLAG_WQ_CASTLE | FLAG_BK_CASTLE | FLAG_BQ_CASTLE | FLAG_W_TURN;
 }
 
 int main() {
