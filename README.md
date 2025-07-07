@@ -19,12 +19,25 @@ This project was initiated as a personal deep dive into how chess engines functi
 - Simple command-line interface (UCI-like I/O planned)
 - Modular code structure for easy extension
 
-## Build & Run Instructions
+Supports basic text input. No GUI integration yet.
 
-### Build
+## Technologies Used
 
-```bash
-make
+- Language: C
+- Concepts: Bitboards, Alpha-Beta Pruning, Static Evaluation
+- Tools: GCC, Make, Unix shell
+
+## Author
+
+Ian Yim  
+Computer Science & Mathematics Undergraduate  
+University of Arizona  
+GitHub: https://github.com/ianyimstudent  
+LinkedIn: https://www.linkedin.com/in/ian-yim
+
+## License
+
+This project is licensed under the MIT License – see the [LICENSE](./LICENSE) file for details.
 
 
 ## 📄 License
