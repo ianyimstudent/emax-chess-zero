@@ -10,7 +10,7 @@ PERFT_SRC := tests/perft.c
 PERFT_OUT := test-perft
 
 CC = gcc
-CFLAGS = -Wall -O3 -flto -Iinclude
+CFLAGS = -Wall -O3 -flto -mcpu=native -Iinclude
 
 $(TARGET): $(OBJ_CORE) $(OBJ_MAIN)
 	$(CC) $(CFLAGS) -o $@ $^
