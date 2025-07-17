@@ -2,5 +2,5 @@
 *.out
 *.exe
 emax-chess-zero
-
+.DS_Store
 .vscode/
