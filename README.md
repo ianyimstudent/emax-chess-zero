@@ -13,18 +13,13 @@ This project was initiated as a personal deep dive into how chess engines functi
 ## Features
 
 - Bitboard-based board representation (using `uint64_t`)
-- Legal move generation (no pseudolegal filtering)
-- Alpha-beta pruning with fixed-depth search
-- Basic evaluation function (material + structure)
-- Simple command-line interface (UCI-like I/O planned)
-- Modular code structure for easy extension
-
-Supports basic text input. No GUI integration yet.
+- Legal move generation
+- Alpha-beta pruning with increasing-depth search
 
 ## Technologies Used
 
 - Language: C
-- Concepts: Bitboards, Alpha-Beta Pruning, Static Evaluation
+- Concepts: Bitboards, Alpha-Beta Pruning, Branchless Logic
 - Tools: GCC, Make, Unix shell
 
 ## Author
@@ -36,10 +31,5 @@ GitHub: https://github.com/ianyimstudent
 LinkedIn: https://www.linkedin.com/in/ian-yim
 
 ## License
-
-This project is licensed under the MIT License – see the [LICENSE](./LICENSE) file for details.
-
-
-## 📄 License
 
 This project is licensed under the MIT License – see the [LICENSE](./LICENSE) file for details.
