@@ -27,6 +27,7 @@ typedef struct {
 } move;
 
 void doMove(chess_board *board, move *move);
+void undoMove(chess_board *board, move *move, uint64_t prevMetadataB);
 void generateMove(chess_board *board, move *moveList, int *moveNum);
 
 #endif
